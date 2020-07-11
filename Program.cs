@@ -47,7 +47,7 @@ namespace BlazorStandaloneAADExample
                 builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
 
                 // Add access to Common Data Service to the scope of the access token when the user signs in
-                options.ProviderOptions.DefaultAccessTokenScopes.Add($"{resourceUrl}/user_impersonation");
+               // - options.ProviderOptions.DefaultAccessTokenScopes.Add($"{resourceUrl}/user_impersonation");
                 options.ProviderOptions.AdditionalScopesToConsent.Add($"https://globaldisco.crm.dynamics.com/user_impersonation");
             });
 

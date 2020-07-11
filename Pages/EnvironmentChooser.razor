@@ -8,6 +8,7 @@
 @inject IAccessTokenProvider TokenProvider
 @inject IHttpClientFactory ClientFactory
 @inject ILogger<EnvironmentChooser> logger
+@inject IJSRuntime JSRuntime
 
 <AuthorizeView>
     @*Only show the list if the user is signed in and authorized*@
@@ -17,12 +18,15 @@
             <div>
                 <label for="Environments">Choose an Environment:</label>
                 <select name="Environments" id="EnvironmentsSelector" @bind="@SelectedEnvUrl">
-                    @{ int i = 1;
+
+
+                    @{
+                        int i = 1;
                         foreach (Instance env in instances.value)
                         {
                             if (i == 1)
                             {
-                                <option selected="selected" value="@env.ApiUrl">@env.FriendlyName</option>
+                                <option value="@env.ApiUrl" selected="selected">@env.FriendlyName</option>
                                 i++;
                             }
                             else
@@ -31,6 +35,8 @@
                             }
                         }
                     }
+
+
                 </select>
             </div>
         }
@@ -53,16 +59,22 @@
             if (selectedEnvUrl != value)
             {
                 selectedEnvUrl = value;
+               
                 if (SelectedEnvUrlChanged.HasDelegate)
                 {
                     SelectedEnvUrlChanged.InvokeAsync(value);
+                    GoHome();
                 }
             }
         }
     }
 
     [Parameter]
-    public EventCallback<string> SelectedEnvUrlChanged { get; set; }    
+    public EventCallback<string> SelectedEnvUrlChanged { get; set; }
+
+    private async void GoHome() {
+        await JSRuntime.InvokeVoidAsync("GoHome");
+    }
 
     private InstanceCollection instances;
 

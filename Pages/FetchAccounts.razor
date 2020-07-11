@@ -12,61 +12,70 @@
     @*Only show the list if the user is signed in and authorized*@
     <Authorized>
         <h3>Fetch Accounts</h3>
-        <br /><label>SelectedEnvUrl: @SelectedEnvUrl</label>
 
-        @if (accounts != null)
+        @if (SelectedEnvUrl != string.Empty)
         {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Main Phone</th>
-                        <th>City</th>
-                        <th>Primary Contact</th>
-                        <th>Email (Primary Contact)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (Account account in accounts.value)
-                    {
-                        <tr id="@account.accountid">
-                            <td>
-                                @((account.name != null)
+
+            <br /><label>SelectedEnvUrl: @SelectedEnvUrl</label>
+
+            @if (accounts != null)
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Main Phone</th>
+                            <th>City</th>
+                            <th>Primary Contact</th>
+                            <th>Email (Primary Contact)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Account account in accounts.value)
+                        {
+                            <tr id="@account.accountid">
+                                <td>
+                                    @((account.name != null)
                                 ? account.name
                                 : string.Empty)
-                            </td>
-                            <td>
-                                @((account.telephone1 != null)
+                                </td>
+                                <td>
+                                    @((account.telephone1 != null)
                                 ? account.telephone1
                                 : string.Empty)
-                            </td>
-                            <td>
-                                @((account.address1_city != null)
+                                </td>
+                                <td>
+                                    @((account.address1_city != null)
                                 ? account.address1_city
                                 : string.Empty)
-                            </td>
-                            <td>
-                                @((account.primarycontactid != null)
+                                </td>
+                                <td>
+                                    @((account.primarycontactid != null)
                                 ? (account.primarycontactid.fullname != null
                                     ? account.primarycontactid.fullname
                                     : string.Empty)
                                 : string.Empty)
-                            </td>
-                            <td>
-                                @((account.primarycontactid != null)
+                                </td>
+                                <td>
+                                    @((account.primarycontactid != null)
                                 ? (account.primarycontactid.emailaddress1 !=null
                                     ? account.primarycontactid.emailaddress1
                                     : string.Empty)
                                 : string.Empty)
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p><em>@message</em></p>
+            }
         }
         else
         {
-            <p><em>@message</em></p>
+            <p><em>You must select an environment first.</em></p>
         }
     </Authorized>
     <NotAuthorized>
