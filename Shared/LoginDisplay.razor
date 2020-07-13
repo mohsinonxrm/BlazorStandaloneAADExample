@@ -7,9 +7,9 @@
 
 <AuthorizeView>
     <Authorized>
-        <EnvironmentChooser @bind-SelectedEnvUrl="@FetchAccounts.SelectedEnvUrl" />
+        <div class="nav-link"><EnvironmentChooser /></div>
         
-        Hello, @context.User.Identity.Name!
+        <label class="nav-link">Hello, @context.User.Identity.Name!</label>
         <button class="nav-link btn btn-link" @onclick="BeginLogout">Log out</button>
     </Authorized>
     <NotAuthorized>

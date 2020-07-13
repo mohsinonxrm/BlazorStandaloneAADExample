@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using BlazorStandaloneAADExample.Models;
 
 namespace BlazorStandaloneAADExample
 {
@@ -21,7 +22,6 @@ namespace BlazorStandaloneAADExample
 
             // Get configuration data about the Web API set in wwwroot/appsettings.json
             var CDSWebApiConfig = builder.Configuration.GetSection("CDSWebAPI");
-            var resourceUrl = CDSWebApiConfig.GetSection("ResourceUrl").Value;
             var version = CDSWebApiConfig.GetSection("Version").Value;
             var timeoutSeconds = int.Parse(CDSWebApiConfig.GetSection("TimeoutSeconds").Value);
 
@@ -35,8 +35,7 @@ namespace BlazorStandaloneAADExample
             // Create an named definition of an HttpClient that can be created in a component page
             builder.Services.AddHttpClient("CDSClient", client =>
             {
-                // See https://docs.microsoft.com/powerapps/developer/common-data-service/webapi/compose-http-requests-handle-errors
-                //client.BaseAddress = new Uri($"{resourceUrl}/api/data/{version}/");
+                // See https://docs.microsoft.com/powerapps/developer/common-data-service/webapi/compose-http-requests-handle-errors                
                 client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
                 client.DefaultRequestHeaders.Add("OData-Version", "4.0");
                 client.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
@@ -47,10 +46,11 @@ namespace BlazorStandaloneAADExample
                 builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
 
                 // Add access to Common Data Service to the scope of the access token when the user signs in
-                options.ProviderOptions.DefaultAccessTokenScopes.Add($"{resourceUrl}/user_impersonation");
-                options.ProviderOptions.AdditionalScopesToConsent.Add($"https://globaldisco.crm.dynamics.com/user_impersonation");
+                //options.ProviderOptions.DefaultAccessTokenScopes.Add($"{resourceUrl}/user_impersonation");
+                options.ProviderOptions.DefaultAccessTokenScopes.Add($"https://globaldisco.crm.dynamics.com/user_impersonation");
             });
 
+            builder.Services.AddSingleton(typeof(AppState), new AppState());
 
             await builder.Build().RunAsync();
         }

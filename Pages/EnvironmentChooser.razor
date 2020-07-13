@@ -1,13 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using System.Net.Http.Headers
 @using System.Net.Http.Json
-@using Microsoft.Extensions.Logging;
-@using System.Text.Json.Serialization;
-@using Newtonsoft.Json.Linq;
-@using Newtonsoft.Json;
+@using Microsoft.Extensions.Logging
+@using System.Text.Json.Serialization
+@using Newtonsoft.Json.Linq
+@using Newtonsoft.Json
 @inject IAccessTokenProvider TokenProvider
 @inject IHttpClientFactory ClientFactory
 @inject ILogger<EnvironmentChooser> logger
+@inject Models.AppState AppState
 
 <AuthorizeView>
     @*Only show the list if the user is signed in and authorized*@
@@ -34,6 +35,10 @@
                 </select>
             </div>
         }
+        else
+        {
+            <label>Loading Environments...</label>
+        }
     </Authorized>
 </AuthorizeView>
 
@@ -53,6 +58,8 @@
             if (selectedEnvUrl != value)
             {
                 selectedEnvUrl = value;
+                AppState.SetEnvUrl(value);
+
                 if (SelectedEnvUrlChanged.HasDelegate)
                 {
                     SelectedEnvUrlChanged.InvokeAsync(value);
@@ -62,7 +69,7 @@
     }
 
     [Parameter]
-    public EventCallback<string> SelectedEnvUrlChanged { get; set; }    
+    public EventCallback<string> SelectedEnvUrlChanged { get; set; }
 
     private InstanceCollection instances;
 
@@ -70,11 +77,8 @@
     {
         try
         {
-            var tokenResult = await TokenProvider.RequestAccessToken(
-                             new AccessTokenRequestOptions
-                             {
-                                 Scopes = new[] { "https://globaldisco.crm.dynamics.com/user_impersonation" }
-                             });
+
+            var tokenResult = await TokenProvider.RequestAccessToken();
 
             logger.LogInformation($"AccessTokenResult.Status: {tokenResult.Status}"); //RequiresRedirect
             logger.LogInformation($"AccessTokenResult.RedirectUrl: {tokenResult.RedirectUrl}");
@@ -127,6 +131,11 @@
                 }
 
                 instances = new InstanceCollection() { value = JsonConvert.DeserializeObject<List<Instance>>(values.ToString()).ToArray() };
+
+                if (instances.value.Length > 0)
+                {
+                    AppState.SetEnvUrl(instances.value.First().ApiUrl);
+                }
             }
             else
             {
