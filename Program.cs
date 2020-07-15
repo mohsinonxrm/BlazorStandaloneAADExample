@@ -20,6 +20,10 @@ namespace BlazorStandaloneAADExample
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
+            //Get configuration data about the Global Discovery API set in wwwroot/appsettings.json
+            var GDSWebApiConfig = builder.Configuration.GetSection("GDSWebAPI");
+            var gdsResourceUrl = GDSWebApiConfig.GetSection("ResourceUrl").Value;
+
             // Get configuration data about the Web API set in wwwroot/appsettings.json
             var CDSWebApiConfig = builder.Configuration.GetSection("CDSWebAPI");
             var version = CDSWebApiConfig.GetSection("Version").Value;
@@ -28,7 +32,7 @@ namespace BlazorStandaloneAADExample
             // Create an named definition of an HttpClient that can be created in a component page
             builder.Services.AddHttpClient("GDSClient", client =>
             {
-                client.BaseAddress = new Uri($"https://globaldisco.crm.dynamics.com/");
+                client.BaseAddress = new Uri(gdsResourceUrl);
                 client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
             });
 
@@ -45,9 +49,8 @@ namespace BlazorStandaloneAADExample
             {
                 builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
 
-                // Add access to Common Data Service to the scope of the access token when the user signs in
-                //options.ProviderOptions.DefaultAccessTokenScopes.Add($"{resourceUrl}/user_impersonation");
-                options.ProviderOptions.DefaultAccessTokenScopes.Add($"https://globaldisco.crm.dynamics.com/user_impersonation");
+                // Add access to Global Discovery Service to the scope of the access token when the user signs in                
+                options.ProviderOptions.DefaultAccessTokenScopes.Add($"{gdsResourceUrl}/user_impersonation");
             });
 
             builder.Services.AddSingleton(typeof(AppState), new AppState());
